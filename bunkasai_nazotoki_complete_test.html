@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消えた文化祭の宝物</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eee9df;color:#302d29;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif}
+.app{max-width:480px;min-height:100vh;margin:auto;background:#fff;padding:20px 18px 40px}
+.top{display:flex;justify-content:space-between;align-items:center;color:#777;font-size:13px}
+.badge{display:inline-block;background:#eee5d4;padding:6px 10px;border-radius:20px;font-size:13px}
+h1{font-size:28px;line-height:1.45;margin:12px 0 18px}
+h2{font-size:21px;line-height:1.5;margin:16px 0}
+p{line-height:1.85}
+.story,.question{background:#faf7f0;border-radius:14px;padding:16px;margin:16px 0}
+.question{border:1px solid #e6ddce}
+.notice{font-size:14px;color:#777}
+button{width:100%;border:0;border-radius:12px;padding:15px 14px;font-size:17px;font-weight:bold;margin-top:10px;background:#8d7047;color:#fff}
+button.secondary{background:#eee;color:#444}
+input{width:100%;padding:14px;border:2px solid #ccc;border-radius:11px;font-size:18px;text-align:center;margin-top:8px}
+.hint{display:none;background:#fff8d9;border:1px solid #e5d68f;border-radius:10px;padding:12px;margin-top:9px;line-height:1.7}
+.msg{min-height:28px;margin-top:12px;font-weight:bold;text-align:center}
+.progress{height:7px;background:#eee;border-radius:8px;overflow:hidden;margin:10px 0 18px}
+.bar{height:100%;background:#8d7047;width:20%}
+.code{letter-spacing:9px;font-size:30px;font-weight:bold;text-align:center;background:#f5f0e7;padding:18px;border-radius:12px}
+.center{text-align:center}
+.small{font-size:13px;color:#777}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div id="start">
+  <div class="top"><span class="badge">文化祭・謎解き</span><span>スマホ版</span></div>
+  <h1>🔐 消えた文化祭の宝物</h1>
+  <div class="story">
+    文化祭の準備をしていたあなたのスマホに、突然メッセージが届いた。<br><br>
+    <b>「文化祭の宝物を隠した。<br>5つの謎を解けば、場所を示す暗号が分かる。」</b>
+  </div>
+  <p>5つの謎を順番に解いてください。分からなくなったら、ヒントを使えます。</p>
+  <button onclick="startGame()">ゲームを始める ▶</button>
+</div>
+
+<div id="game" class="hidden">
+  <div class="top"><span id="qtitle">第1問</span><span id="count">1 / 5</span></div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+
+  <div class="question">
+    <h2 id="question"></h2>
+    <p id="sub"></p>
+  </div>
+
+  <button class="secondary" onclick="hint(1)">💡 ヒント1</button>
+  <div class="hint" id="hint1"></div>
+  <button class="secondary" onclick="hint(2)">💡 ヒント2</button>
+  <div class="hint" id="hint2"></div>
+
+  <input id="answer" type="text" placeholder="答えを入力" autocomplete="off">
+  <button onclick="check()">答えを確認</button>
+  <div class="msg" id="msg"></div>
+</div>
+
+<div id="finish" class="hidden">
+  <div class="center">
+    <div style="font-size:58px;margin-top:20px">🎉</div>
+    <h1>5つの謎をクリア！</h1>
+    <p>5問から集めた文字を並べると……</p>
+    <div class="code">ぶんかさい</div>
+    <h2>🔓 暗号が完成しました！</h2>
+    <p>これで「文化祭の宝物」の場所を示す最後の手がかりが分かります。</p>
+    <div class="story">
+      <b>本番ではここに「宝物の場所」または最後の指示を表示します。</b>
+    </div>
+    <button onclick="location.reload()">最初から遊ぶ</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const qs=[
+{
+ q:"学校にあるものです。鉛筆も、消しゴムも、ハサミも仲間です。でも、この名前は道具そのものではありません。さて、何でしょう？",
+ s:"いろいろな「書く・消す・切る」道具をまとめて呼ぶ名前です。",
+ h1:"「文」から始まる言葉です。",
+ h2:"答えは4文字ではありません。『ぶ・ん・ぼ・う・ぐ』です。",
+ a:["ぶんぼうぐ","文房具"], c:"ぶ"
+},
+{
+ q:"「かける」と言われたら何を思いますか？ 水をかける、ではありません。「切る」こともできます。でも刃物は使いません。「受ける」こともできます。さて、何でしょう？",
+ s:"相手と声で話すためのものです。",
+ h1:"遠くの人と話すときに使います。",
+ h2:"『かける・切る・受ける』が全部使えるものです。",
+ a:["でんわ","電話"], c:"ん"
+},
+{
+ q:"雨の日に大活躍。開くと大きくなり、閉じると細くなります。人が中に入るわけではないのに、人を雨から守ります。さて、何でしょう？",
+ s:"外出するときに持っていくものです。",
+ h1:"頭の上で開きます。",
+ h2:"2文字です。「か」から始まります。",
+ a:["かさ","傘"], c:"か"
+},
+{
+ q:"海や川にいるものです。でも、ここで考えているのは『泳ぎ方』ではありません。食卓に並ぶこともあり、焼いたり煮たりして食べます。まとめて何と呼ぶでしょう？",
+ s:"『魚』という漢字の読み方を考えてみましょう。",
+ h1:"3文字です。",
+ h2:"『さ・か・な』の最初の文字を使います。",
+ a:["さかな","魚"], c:"さ"
+},
+{
+ q:"4本の脚があります。でも歩けません。人が上に乗ることはできますが、馬ではありません。人が『座る』ために使うものです。さて、何でしょう？",
+ s:"学校にも家にもあります。",
+ h1:"机と一緒に使うことが多いものです。",
+ h2:"2文字です。「い」から始まります。",
+ a:["いす","椅子"], c:"い"
+}
+];
+
+let n=0, collected=[];
+function startGame(){document.getElementById("start").classList.add("hidden");document.getElementById("game").classList.remove("hidden");render()}
+function render(){
+ const x=qs[n];
+ document.getElementById("qtitle").textContent="第"+(n+1)+"問";
+ document.getElementById("count").textContent=(n+1)+" / 5";
+ document.getElementById("bar").style.width=((n+1)*20)+"%";
+ document.getElementById("question").textContent=x.q;
+ document.getElementById("sub").textContent=x.s;
+ document.getElementById("answer").value="";
+ document.getElementById("msg").textContent="";
+ document.getElementById("hint1").style.display="none";
+ document.getElementById("hint2").style.display="none";
+ document.getElementById("hint1").textContent=x.h1;
+ document.getElementById("hint2").textContent=x.h2;
+}
+function hint(k){document.getElementById("hint"+k).style.display="block"}
+function norm(v){return v.trim().replace(/\s/g,"").toLowerCase()}
+function check(){
+ const v=norm(document.getElementById("answer").value);
+ const x=qs[n], msg=document.getElementById("msg");
+ if(x.a.map(norm).includes(v)){
+   collected.push(x.c);
+   msg.textContent="⭕ 正解！ 次の謎へ進みます。";
+   msg.style.color="#287a3d";
+   setTimeout(()=>{
+     n++;
+     if(n>=qs.length){
+       document.getElementById("game").classList.add("hidden");
+       document.getElementById("finish").classList.remove("hidden");
+     }else render();
+   },700);
+ }else{
+   msg.textContent="❌ まだ違うようです。ヒントを使ってもう一度！";
+   msg.style.color="#a33";
+ }
+}
+</script>
+</body>
+</html>
