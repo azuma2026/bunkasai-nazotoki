@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -42,6 +43,7 @@ input{width:100%;padding:14px;border:2px solid #ccc;border-radius:11px;font-size
   </div>
   <p>5つの謎には、ちょっとした「ひっかけ」や言葉遊びがあります。<br>
   分からなくなったら、ヒントを使えます。</p>
+  <p style="color:#d22;font-weight:bold;margin:8px 0 0">※ 回答はひらがなでお願いします。</p>
   <button onclick="startGame()">ゲームを始める ▶</button>
 </div>
 
@@ -97,7 +99,7 @@ const qs=[
 {
  q:"「かける」「切る」「受ける」。この3つを全部するものがあります。でも、刃物ではありません。何でしょう？",
  s:"遠くの人と声で話す道具です。",
- h1:"「電話をかける・切る・受ける」と言います。",
+ h1:"「○○をかける・切る・受ける」と言います。",
  h2:"「かける・切る・受ける」の前に、同じ言葉を置いてみましょう。",
  a:["でんわ","電話"], c:"ん"
 },
@@ -109,7 +111,7 @@ const qs=[
  a:["かさ","傘"], c:"か"
 },
 {
- q:"上ったり下ったりする道です。山にもあります。階段にもあります。さて、何でしょう？",
+ q:"上ったり下ったりする道です。山にもあります。町の道路にもあります。さて、何でしょう？",
  s:"「急な○○」「○○を上る」と言います。",
  h1:"2文字です。「さ○」です。",
  h2:"第3問の答えをひっくり返すと……？",
@@ -118,13 +120,15 @@ const qs=[
 {
  q:"数字の「1」と「5」を、声に出してつなげると、食べ物になります。さて、何でしょう？",
  s:"1は「いち」、5は「ご」と読みます。",
- h1:"「いち」＋「ご」です。",
- h2:"赤くて、つぶつぶのある甘い果物です。",
- a:["いちご","苺","イチゴ"], c:"い"
+ h1:"赤くて、つぶつぶのある甘い果物です。",
+ h2:"「いち」＋「ご」です。",
+ a:["いちご","苺"], c:"い"
 }
 ];
 
 let n=0;
+let answered=false;
+
 function startGame(){
   document.getElementById("start").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
@@ -132,6 +136,7 @@ function startGame(){
 }
 function render(){
   const x=qs[n];
+  answered=false;
   document.getElementById("qtitle").textContent="第"+(n+1)+"問";
   document.getElementById("count").textContent=(n+1)+" / 5";
   document.getElementById("bar").style.width=((n+1)*20)+"%";
@@ -146,16 +151,25 @@ function render(){
   document.getElementById("hint2").textContent=x.h2;
   document.getElementById("collect").style.display="none";
 }
-function hint(k){document.getElementById("hint"+k).style.display="block"}
-function norm(v){return v.trim().replace(/\s/g,"").toLowerCase()}
+function hint(k){
+  document.getElementById("hint"+k).style.display="block";
+}
+function norm(v){
+  return v.trim().replace(/\s/g,"").toLowerCase();
+}
 function check(){
+  if(answered) return;
+
   const v=norm(document.getElementById("answer").value);
   const x=qs[n], msg=document.getElementById("msg");
+
   if(x.a.map(norm).includes(v)){
+    answered=true;
     msg.textContent="⭕ 正解！";
     msg.style.color="#287a3d";
     document.getElementById("collectChar").textContent=x.c;
     document.getElementById("collect").style.display="block";
+
     setTimeout(()=>{
       n++;
       if(n>=qs.length){
